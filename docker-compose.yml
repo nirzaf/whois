@@ -1,0 +1,38 @@
+version: '3.1'
+
+volumes:
+  whoisitdiag:
+    external: false
+  webquerydiag:
+    external: false
+
+services:
+  whoisitapp:
+    build:
+      context: ./whoisit
+    container_name: whoisit
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=Wh0is1t
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/whoisit.pfx
+    volumes:
+      - ~/.aspnet/https:/https:ro
+      - whoisitdiag:/tmp
+
+  webqueryapp:
+    build:
+      context: ./webquery
+    container_name: webquery
+    ports:
+      - 8000:80
+      - 8001:443
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTPS_PORT=8001
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=W3bQu3ry
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/webquery.pfx
+    volumes:
+      - ~/.aspnet/https:/https:ro
+      - webquerydiag:/tmp
